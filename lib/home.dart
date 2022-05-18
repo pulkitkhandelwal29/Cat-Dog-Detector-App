@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:tflite/tflite.dart';
+import 'package:image_picker/image_picker.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -7,6 +9,29 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   bool _loading = true;
+  File _image;
+  List _output;
+  final picker = ImagePicker();
+
+  detectImage(File image) async {
+    var output = await Tflite.runModelOnImage(
+        path: image.path,
+        numResults: 2,
+        threshold: 0.6,
+        imageMean: 127.5,
+        imageStd: 127.5);
+
+    setState(() {
+      _output = output;
+      _loading = false;
+    });
+  }
+
+  loadMode() async {
+    await Tflite.loadModel(
+        model: 'assets/model_cat_dog.tflite',
+        labels: 'assets/model_cat_dog.txt');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +43,7 @@ class _HomeState extends State<Home> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(
-                height: 50,
+                height: 20,
               ),
               SizedBox(
                 height: 5,
@@ -28,19 +53,19 @@ class _HomeState extends State<Home> {
                 style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w500,
-                    fontSize: 30),
+                    fontSize: 20),
               ),
               SizedBox(
-                height: 50,
+                height: 30,
               ),
               Center(
                 child: _loading
                     ? Container(
-                        width: 350,
+                        width: 250,
                         child: Column(children: [
                           Image.asset('assets/cat_dog_icon.png'),
                           SizedBox(
-                            height: 50,
+                            height: 10,
                           )
                         ]),
                       )
@@ -55,8 +80,8 @@ class _HomeState extends State<Home> {
                       child: Container(
                           width: MediaQuery.of(context).size.width - 250,
                           alignment: Alignment.center,
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 18),
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 20, vertical: 3),
                           decoration: BoxDecoration(
                             color: Colors.redAccent,
                             borderRadius: BorderRadius.circular(5),
@@ -67,7 +92,7 @@ class _HomeState extends State<Home> {
                           )),
                     ),
                     SizedBox(
-                      height: 10,
+                      height: 5,
                     ),
                     GestureDetector(
                       onTap: () {},
@@ -75,7 +100,7 @@ class _HomeState extends State<Home> {
                         width: MediaQuery.of(context).size.width - 250,
                         alignment: Alignment.center,
                         padding:
-                            EdgeInsets.symmetric(horizontal: 10, vertical: 18),
+                            EdgeInsets.symmetric(horizontal: 20, vertical: 3),
                         decoration: BoxDecoration(
                           color: Colors.redAccent,
                           borderRadius: BorderRadius.circular(5),
