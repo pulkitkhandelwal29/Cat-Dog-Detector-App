@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tflite/tflite.dart';
 import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
 class Home extends StatefulWidget {
   @override
@@ -9,9 +10,17 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   bool _loading = true;
-  File _image;
-  List _output;
+  late File _image;
+  List<dynamic>? _output = [];
   final picker = ImagePicker();
+
+  @override
+  void initState() {
+    super.initState();
+    loadMode().then((value) {
+      setState(() {});
+    });
+  }
 
   detectImage(File image) async {
     var output = await Tflite.runModelOnImage(
@@ -34,6 +43,32 @@ class _HomeState extends State<Home> {
   }
 
   @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+  }
+
+  pickImage() async {
+    var image = await picker.getImage(source: ImageSource.camera);
+    if (image == null) return null;
+
+    setState(() {
+      _image = File(image.path);
+    });
+    detectImage(_image);
+  }
+
+  pickGalleryImage() async {
+    var image = await picker.getImage(source: ImageSource.gallery);
+    if (image == null) return null;
+
+    setState(() {
+      _image = File(image.path);
+    });
+    detectImage(_image);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Colors.blueAccent,
@@ -43,7 +78,7 @@ class _HomeState extends State<Home> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(
-                height: 20,
+                height: 30,
               ),
               SizedBox(
                 height: 5,
