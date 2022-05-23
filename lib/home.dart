@@ -11,7 +11,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   bool _loading = true;
   late File _image;
-  List<dynamic>? _output = [];
+  late List<dynamic>? _output;
   final picker = ImagePicker();
 
   @override
@@ -104,14 +104,37 @@ class _HomeState extends State<Home> {
                           )
                         ]),
                       )
-                    : Container(),
+                    : Container(
+                        child: Column(
+                          children: [
+                            Container(
+                              height: 250,
+                              child: Image.file(_image),
+                            ),
+                            SizedBox(height: 10),
+                            _output != null
+                                ? Text(
+                                    '${_output![0]['label']}',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  )
+                                : Container(),
+                            SizedBox(height: 5),
+                          ],
+                        ),
+                      ),
               ),
               Container(
                 width: MediaQuery.of(context).size.width,
                 child: Column(
                   children: [
                     GestureDetector(
-                      onTap: () {},
+                      onTap: () {
+                        pickImage();
+                      },
                       child: Container(
                           width: MediaQuery.of(context).size.width - 250,
                           alignment: Alignment.center,
@@ -130,7 +153,9 @@ class _HomeState extends State<Home> {
                       height: 5,
                     ),
                     GestureDetector(
-                      onTap: () {},
+                      onTap: () {
+                        pickGalleryImage();
+                      },
                       child: Container(
                         width: MediaQuery.of(context).size.width - 250,
                         alignment: Alignment.center,
